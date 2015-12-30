@@ -22,6 +22,7 @@ import io.netty.handler.logging.LogLevel;
 import io.reactivex.netty.examples.AbstractClientExample;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
+import rx.Observable;
 
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
@@ -75,7 +76,8 @@ public class HelloWorldClient extends AbstractClientExample {
         HttpClient.newClient(serverAddress)
                   .enableWireLogging(LogLevel.DEBUG)
                   /*Creates a GET request with URI "/hello"*/
-                  .createGet("/hello")
+                  .createPost("/hello")
+                  .writeStringContent(Observable.just("aaa"))
                   /*Prints the response headers*/
                   .doOnNext(resp -> logger.info(resp.toString()))
                   /*Since, we are only interested in the content, now, convert the stream to the content stream*/

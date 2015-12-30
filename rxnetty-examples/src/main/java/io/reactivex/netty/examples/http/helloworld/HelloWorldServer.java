@@ -21,9 +21,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.handler.logging.LogLevel;
 import io.reactivex.netty.examples.AbstractServerExample;
 import io.reactivex.netty.protocol.http.server.HttpServer;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.spectator.http.HttpServerListener;
-
-import static rx.Observable.*;
+import org.reactivestreams.Publisher;
+import reactor.core.publisher.convert.RxJava1Converter;
+import reactor.rx.Stream;
+import reactor.rx.Streams;
+import rx.Observable;
+import rx.RxReactiveStreams;
 
 /**
  * An HTTP "Hello World" server.
@@ -38,13 +43,10 @@ public final class HelloWorldServer extends AbstractServerExample {
 
         /*Starts a new HTTP server on an ephemeral port.*/
         server = HttpServer.newServer()
-                           .enableWireLogging(LogLevel.ERROR);
+                .enableWireLogging(LogLevel.ERROR);
         server.subscribe(new HttpServerListener(""));
                            /*Starts the server with a request handler.*/
-                           server.start((req, resp) ->
-                                          /*Write a single content chunk as string "Hello World!"*/
-                                          resp.writeString(just("Hello World!"))
-                           );
+        server.start((req, resp) -> performWork(req));
 
         /*Wait for shutdown if not called from the client (passed an arg)*/
         if (shouldWaitForShutdown(args)) {
@@ -55,4 +57,14 @@ public final class HelloWorldServer extends AbstractServerExample {
         the caller, if any.*/
         setServerPort(server.getServerPort());
     }
+
+
+    public static Observable<Void> performWork(HttpServerRequest<ByteBuf> request) {
+        return RxJava1Converter.from(
+                Streams.just(1).concatMap(i -> {
+                    Publisher<ByteBuf> content = RxJava1Converter.from(request.getContent());
+                    return Streams.wrap(content).buffer().after();
+                }));
+    }
+
 }
