@@ -28,8 +28,8 @@ configure(subprojects) {
     apply plugin: 'java'
 
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
         maven { url 'https://oss.jfrog.org/libs-snapshot' }  // RxNetty 0.5.x snapshots
         maven { url 'http://repo.spring.io/snapshot' }  // Reactor snapshot
     }
@@ -39,13 +39,13 @@ configure(subprojects) {
     targetCompatibility = JavaVersion.VERSION_1_7
 
     dependencies {
-        compile "io.reactivex:rxjava:1.0.15"
+        compile "io.reactivex:rxjava:1.1.2"
 
         compile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.2'
         compile 'org.openjdk.jmh:jmh-core:1.11.2'
 
         compile 'io.reactivex:rxjava-reactive-streams:1.0.1'
-        compile "io.projectreactor:reactor-stream:2.1.0.BUILD-SNAPSHOT"
+        compile "io.projectreactor:reactor-core:2.5.0.BUILD-SNAPSHOT"
 
         testCompile 'junit:junit:4.12'
         testCompile "org.hamcrest:hamcrest-library:1.3"

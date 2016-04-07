@@ -24,11 +24,9 @@ import io.reactivex.netty.protocol.http.server.HttpServer;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.spectator.http.HttpServerListener;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.convert.RxJava1Converter;
-import reactor.rx.Stream;
-import reactor.rx.Streams;
+import reactor.core.converter.RxJava1ObservableConverter;
+import reactor.core.publisher.Flux;
 import rx.Observable;
-import rx.RxReactiveStreams;
 
 /**
  * An HTTP "Hello World" server.
@@ -60,10 +58,10 @@ public final class HelloWorldServer extends AbstractServerExample {
 
 
     public static Observable<Void> performWork(HttpServerRequest<ByteBuf> request) {
-        return RxJava1Converter.from(
-                Streams.just(1).concatMap(i -> {
-                    Publisher<ByteBuf> content = RxJava1Converter.from(request.getContent());
-                    return Streams.wrap(content).buffer().after();
+        return RxJava1ObservableConverter.from(
+                Flux.just(1).concatMap(i -> {
+                    Publisher<ByteBuf> content = RxJava1ObservableConverter.from(request.getContent());
+                    return Flux.from(content).buffer().after();
                 }));
     }
 
